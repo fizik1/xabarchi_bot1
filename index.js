@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const Teacher = require("./models");
 require("dotenv").config();
 // mongoose.connect("mongodb://127.0.0.1:27017/");
+
 mongoose.connect(
   "mongodb+srv://shahobnarpay:parolniunutdim@cluster0.01zvuz3.mongodb.net/?retryWrites=true&w=majority"
 );
