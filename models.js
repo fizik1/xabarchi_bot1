@@ -6,6 +6,12 @@ const teacherSchema = new Schema({
         type:String,
         required:true
     },
+    user_full_name:{
+        type:String,
+    },
+    username:{
+        type:String
+    },
     chatId:{
         type:String,
         required:true
@@ -22,6 +28,14 @@ const teacherSchema = new Schema({
     },
     isThereToday:{
         type:Boolean,
+        required:true
+    },
+    createAt:{
+        type:Date,
+        required:true,
+    },
+    updateAt:{
+        type:Date,
         required:true
     }
 })

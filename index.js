@@ -3,10 +3,10 @@ const TelegramBot = require("node-telegram-bot-api");
 const mongoose = require("mongoose");
 const Teacher = require("./models");
 require("dotenv").config();
-mongoose.connect("mongodb://127.0.0.1:27017/");
-// mongoose.connect(
-//   "mongodb+srv://shahobnarpay:parolniunutdim@cluster0.01zvuz3.mongodb.net/?retryWrites=true&w=majority"
-// );
+// mongoose.connect("mongodb://127.0.0.1:27017/");
+mongoose.connect(
+  "mongodb+srv://shahobnarpay:parolniunutdim@cluster0.01zvuz3.mongodb.net/?retryWrites=true&w=majority"
+);
 
 const token = process.env.TOKEN,
   hemisToken = process.env.HEMISTOKEN,
@@ -41,24 +41,30 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
-  if (msg.text == "/start" ||msg.text=="Qayta ishga tushirish") {
+  if (msg.text == "/start" || msg.text == "Qayta ishga tushirish") {
     bot.sendMessage(msg.chat.id, 'Ismingizni kiriting: ', {
       'reply_markup': {
-          'keyboard': [['Qayta ishga tushirish', "Ma'lumotni ko'rish"]],
-          resize_keyboard: true,
-          // one_time_keyboard: true,
-          // force_reply: true,
+        'keyboard': [['Qayta ishga tushirish', "Ma'lumotni ko'rish"]],
+        resize_keyboard: true,
+        // one_time_keyboard: true,
+        // force_reply: true,
       }
-  });
-  }else if(msg.text=="Ma'lumorni ko'rish"){
-    let teacher = await Teacher.findOne({chatId:msg.chat.id})
-    console.log(teacher);
-    bot.sendMessage(
-      msg.chat.id,
-      `O'qituvchi ismi: <b>${teacher?.full_name}</b>`,
-      { parse_mode: "HTML" }
-    );
-  }else {
+    });
+  } else if (msg.text == "Ma'lumotni ko'rish") {
+    let teacher = await Teacher.findOne({ chatId: msg.chat.id })
+    if (teacher) {
+      bot.sendMessage(
+        msg.chat.id,
+        `O'qituvchi ismi: <b>${teacher?.full_name}</b>`,
+        { parse_mode: "HTML" }
+      );
+    } else {
+      bot.sendMessage(
+        msg.chat.id,
+        "Ma'lumot topilmadi"
+      );
+    }
+  } else {
     await TeacherName(msg.text, msg);
   }
 });
@@ -143,14 +149,18 @@ async function TeacherData(id, opts, msg, full_name) {
           if (newUser) {
             await Teacher.create({
               chatId: msg.chat.id,
+              user_full_name:msg.chat.first_name+' '+msg.chat.last_name,
+              username:msg.chat.username,
               full_name,
               employeeId: id,
               isThereToday: false,
+              createAt: Date.now(),
+              updateAt: Date.now()
             });
           } else {
             await Teacher.updateOne(
               { chatId: msg.chat.id },
-              { full_name, employeeId: id, isThereToday: false }
+              { full_name, employeeId: id, isThereToday: false, updateAt: Date.now() }
             );
           }
 
@@ -193,11 +203,10 @@ async function TeacherData(id, opts, msg, full_name) {
        <b>Xona</b>: ${item.auditorium.name}
        <b>Dars turi</b>: ${item.trainingType.name}
        <b>Dars sanasi</b>: ${new Date(
-         item.lesson_date * 1000
-       ).toLocaleDateString()}
-       <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${
-                  item.lessonPair.end_time
-                }`;
+                  item.lesson_date * 1000
+                ).toLocaleDateString()}
+       <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${item.lessonPair.end_time
+                  }`;
               }
             });
           });
@@ -208,122 +217,138 @@ async function TeacherData(id, opts, msg, full_name) {
             { parse_mode: "HTML" }
           );
 
-          setInterval(async () => {
-            let hour = new Date().getHours(),
-              minut = new Date().getMinutes();
-            let teachers = await Teacher.find({ isThereToday: true });
-            console.log(
-              `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}`
-            );
 
-            // Morning message
-            teachers.forEach((teacher) => {
-              teacher.dailyLessons.forEach((element) => {
-                if (
-                  element.lessonPair.end_time ==
-                  `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
-                    -2
-                  )}`
-                ) {
-                  bot.sendMessage(teacher.chatId, `Dars tugadi`);
-                }
-              });
-            });
-
-            // Notification
-            if (
-              `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
-                -2
-              )}` == `${String(108).slice(-2)}:${String(100).slice(-2)}`
-            ) {
-              teachers.forEach((teacher) => {
-                let message;
-                teacher.dailyLessonsCount.forEach((element) => {
-                  message += `
-                    
-  <b style="color:blue;text-align:center">🕰${element}</b>`;
-                  teacher.dailyLessons.forEach((item, key) => {
-                    if (item.lessonPair.start_time == element) {
-                      message += `
-  📎<b>Fan</b>: ${item.subject.name}
-          <b>Fakultet</b>: ${item.faculty.name}
-          <b>Guruh</b>: ${item.group.name}
-          <b>Xona</b>: ${item.auditorium.name}
-          <b>Dars turi</b>: ${item.trainingType.name}
-          <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${item.lessonPair.end_time}`;
-                    }
-                  });
-                });
-
-                bot.sendMessage(
-                  teacher.chatId,
-                  `Bugun <b>${new Date().toLocaleDateString()}</b>
-  Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
-                  { parse_mode: "HTML" }
-                );
-
-                try {
-                  axios
-                    .get(url2, {
-                      headers: {
-                        accept: "application/json",
-                        authorization: "Bearer " + hemisToken,
-                      },
-                      params: {
-                        limit: 200,
-                        _employee: teacher.employeeId,
-                      },
-                    })
-                    .then(async (res) => {
-                      if (res.data.data.pagination.totalCount != 0) {
-                        let dailyLessonsCount = new Set();
-                        let dailyLessons = [];
-
-                        res.data.data.items.forEach(async (element, index) => {
-                          if (
-                            new Date(
-                              element.lesson_date * 1000
-                            ).toLocaleDateString() ==
-                            new Date(today).toLocaleDateString()
-                          ) {
-                            dailyLessonsCount.add(
-                              element.lessonPair.start_time
-                            );
-                            dailyLessons.push(element);
-                          }
-                        });
-
-                        console.log(dailyLessonsCount.size);
-                        if (dailyLessonsCount.size > 0) {
-                          await Teacher.updateOne(
-                            { chatId: msg.chat.id },
-                            {
-                              dailyLessons,
-                              dailyLessonsCount,
-                              isThereToday: true,
-                            }
-                          );
-                        } else {
-                          await Teacher.updateOne(
-                            { chatId: msg.chat.id },
-                            {
-                              dailyLessons,
-                              dailyLessonsCount,
-                              isThereToday: false,
-                            }
-                          );
-                        }
-                      }
-                    });
-                } catch (error) {
-                  throw error;
-                }
-              });
-            }
-          }, [60000]);
         } else bot.editMessageText("Darslar topilmadi!", opts);
       });
   } catch (error) {
     console.log(error);
   }
 }
+
+setInterval(async () => {
+  let hour = new Date().getHours(),
+    minut = new Date().getMinutes();
+  let teachers = await Teacher.find({ isThereToday: true });
+  console.log(
+    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}`
+  );
+
+  // Notification
+  teachers.forEach((teacher) => {
+    teacher.dailyLessons.forEach((element) => {
+      if (
+        element.lessonPair.end_time ==
+        `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
+          -2
+        )}`
+      ) {
+        bot.sendMessage(teacher.chatId, `Dars tugadi`);
+      }
+    });
+  });
+
+  // Morning message
+  if (
+    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
+      -2
+    )}` == `${String(108).slice(-2)}:${String(100).slice(-2)}`
+  ) {
+    teachers.forEach((teacher) => {
+      let message;
+      teacher.dailyLessonsCount.forEach((element) => {
+        message += `
+          
+<b style="color:blue;text-align:center">🕰${element}</b>`;
+        teacher.dailyLessons.forEach((item, key) => {
+          if (item.lessonPair.start_time == element) {
+            message += `
+📎<b>Fan</b>: ${item.subject.name}
+<b>Fakultet</b>: ${item.faculty.name}
+<b>Guruh</b>: ${item.group.name}
+<b>Xona</b>: ${item.auditorium.name}
+<b>Dars turi</b>: ${item.trainingType.name}
+<b>Dars vaqti</b>: ${item.lessonPair.start_time}-${item.lessonPair.end_time}`;
+          }
+        });
+      });
+
+      bot.sendMessage(
+        teacher.chatId,
+        `Bugun <b>${new Date().toLocaleDateString()}</b>
+Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
+        { parse_mode: "HTML" }
+      );
+    });
+  }
+
+  // Update DataBase
+  if (
+    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
+      -2
+    )}` == `${String(102).slice(-2)}:${String(100).slice(-2)}`
+  ) {
+
+    let allTeachers = await Teacher.find({})
+    allTeachers.forEach(teacher => {
+      try {
+        axios
+          .get(url2, {
+            headers: {
+              accept: "application/json",
+              authorization: "Bearer " + hemisToken,
+            },
+            params: {
+              limit: 200,
+              _employee: teacher.employeeId,
+            },
+          })
+          .then(async (res) => {
+            if (res.data.data.pagination.totalCount != 0) {
+              let dailyLessonsCount = new Set();
+              let dailyLessons = [];
+
+              res.data.data.items.forEach(async (element, index) => {
+                if (
+                  new Date(
+                    element.lesson_date * 1000
+                  ).toLocaleDateString() ==
+                  new Date(today).toLocaleDateString()
+                ) {
+                  dailyLessonsCount.add(
+                    element.lessonPair.start_time
+                  );
+                  dailyLessons.push(element);
+                }
+              });
+
+              console.log(dailyLessonsCount.size);
+              if (dailyLessonsCount.size > 0) {
+                await Teacher.findOneAndUpdate(
+                  { chatId: teacher.chatId },
+                  {
+                    dailyLessons,
+                    dailyLessonsCount,
+                    isThereToday: true,
+                    updateAt: Date.now()
+                  }
+                );
+              } else {
+                await Teacher.findOneAndUpdate(
+                  { chatId: teacher.chatId },
+                  {
+                    dailyLessons,
+                    dailyLessonsCount,
+                    isThereToday: false,
+                    updateAt: Date.now()
+                  }
+                );
+              }
+            }
+          });
+      } catch (error) {
+        throw error;
+      }
+    });
+
+  }
+}, [60000]);
