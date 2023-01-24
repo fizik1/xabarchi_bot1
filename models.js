@@ -37,6 +37,9 @@ const teacherSchema = new Schema({
     updateAt:{
         type:Date,
         required:true
+    },
+    resultByName:{
+        type:[]
     }
 })
 

@@ -3,10 +3,9 @@ const TelegramBot = require("node-telegram-bot-api");
 const mongoose = require("mongoose");
 const Teacher = require("./models");
 require("dotenv").config();
-// mongoose.connect("mongodb://127.0.0.1:27017/");
 
 mongoose.connect(
-  "mongodb+srv://shahobnarpay:parolniunutdim@cluster0.01zvuz3.mongodb.net/?retryWrites=true&w=majority"
+  process.env.DB_URI
 );
 
 const token = process.env.TOKEN,
@@ -14,11 +13,7 @@ const token = process.env.TOKEN,
   url1 = process.env.URL1,
   url2 = process.env.URL2;
 
-let resultByName = "",
-  keyboard = [],
-  employeeId = "",
-  scheduleData = "",
-  year = new Date().getFullYear(),
+let year = new Date().getFullYear(),
   month = new Date().getMonth(),
   day = new Date().getDate(),
   today = new Date(year, month, day).valueOf();
@@ -36,7 +31,6 @@ bot.on("polling_error", (msg) => console.log(msg));
 bot.onText(/\/echo (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const resp = match[1];
-
   bot.sendMessage(chatId, resp);
 });
 
@@ -52,45 +46,43 @@ bot.on("message", async (msg) => {
       }
     });
   } else if (msg.text == "Ma'lumotni ko'rish") {
-    let teacher = await Teacher.findOne({ chatId: msg.chat.id })
+    let teacher = await Teacher.findOne({ chatId})
     if (teacher) {
       bot.sendMessage(
-        msg.chat.id,
+        chatId,
         `O'qituvchi ismi: <b>${teacher?.full_name}</b>`,
         { parse_mode: "HTML" }
       );
     } else {
       bot.sendMessage(
-        msg.chat.id,
+        chatId,
         "Ma'lumot topilmadi"
       );
     }
   } else {
-    await TeacherName(msg.text, msg);
+    await TeacherName(msg);
   }
 });
 
 
 
-bot.on("callback_query", function onCallbackQuery(callbackQuery) {
+bot.on("callback_query", async function onCallbackQuery(callbackQuery) {
   const action = callbackQuery.data;
   const msg = callbackQuery.message;
   const opts = {
     chat_id: msg.chat.id,
     message_id: msg.message_id,
   };
-  let text;
-
+  let {resultByName} = await Teacher.findOne({chatId:msg.chat.id}).select("resultByName")
   resultByName.forEach((item, index) => {
     if (action == index) {
-      full_name = item.full_name;
-      employeeId = item.id;
-      TeacherData(employeeId, opts, msg, full_name);
+      TeacherData(item.id, opts, msg, item.full_name);
     }
   });
+  await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {resultByName:[]})
 });
 
-async function TeacherName(name, msg) {
+async function TeacherName(msg) {
   try {
     await axios
       .get(url1, {
@@ -100,12 +92,14 @@ async function TeacherName(name, msg) {
         },
         params: {
           type: "teacher",
-          search: name,
+          search: msg.text,
         },
       })
-      .then((res) => {
-        if (res.data.data.pagination.totalCount != 0) {
-          resultByName = res.data.data.items;
+      .then(async (res) => {
+        if (res.data.data.pagination.totalCount !== 0) {
+          await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {resultByName:res.data.data.items})
+          // resultByName = res.data.data.items;
+          let keyboard=[]
           res.data.data.items.forEach((element, index) => {
             keyboard.push([{ text: element.full_name, callback_data: index }]);
           });
@@ -115,8 +109,7 @@ async function TeacherName(name, msg) {
             }),
           };
           // force_reply: true,
-          bot.sendMessage(msg.chat.id, "Tanlang", options);
-          keyboard = [];
+          bot.sendMessage(msg.chat.id, "O'z ism familyangizni anlang", options);
         } else
           bot.sendMessage(
             msg.chat.id,
@@ -168,8 +161,7 @@ async function TeacherData(id, opts, msg, full_name) {
           let dailyLessonsCount = new Set();
           let dailyLessons = [];
 
-          scheduleData = res.data.data.items;
-          scheduleData.forEach(async (element, index) => {
+          res.data.data.items.forEach(async (element, index) => {
             if (
               new Date(element.lesson_date * 1000).toLocaleDateString() ==
               new Date(today).toLocaleDateString()
@@ -226,6 +218,8 @@ async function TeacherData(id, opts, msg, full_name) {
   }
 }
 
+
+//Har minutda malumotni ma'lumotni tekshirish
 setInterval(async () => {
   let hour = new Date().getHours(),
     minut = new Date().getMinutes();
