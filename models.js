@@ -4,7 +4,7 @@ const { Schema, model } = require("mongoose");
 const teacherSchema = new Schema({
     full_name:{
         type:String,
-        required:true
+        // required:true
     },
     user_full_name:{
         type:String,
@@ -18,7 +18,7 @@ const teacherSchema = new Schema({
     },
     employeeId:{
         type:String,
-        required:true
+        // required:true
     },
     dailyLessons:{
         type:[]
@@ -28,19 +28,11 @@ const teacherSchema = new Schema({
     },
     isThereToday:{
         type:Boolean,
-        required:true
-    },
-    createAt:{
-        type:Date,
-        required:true,
-    },
-    updateAt:{
-        type:Date,
-        required:true
+        // required:true
     },
     resultByName:{
         type:[]
     }
-})
+}, {timestamps:true})
 
 module.exports = model("Teacher", teacherSchema)
