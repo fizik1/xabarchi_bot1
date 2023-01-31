@@ -5,7 +5,9 @@ const Teacher = require("./models");
 require("dotenv").config();
 
 mongoose.connect(
-  process.env.DB_URI
+  process.env.DB_URI,()=>{
+    console.log("Connecting");
+  }
 );
 
 const token = process.env.TOKEN,
@@ -47,8 +49,9 @@ bot.on("message", async (msg) => {
     });
   } else if (msg.text == "Ma'lumotni ko'rish") {
     let teacher = await Teacher.findOne({ chatId})
+    console.log("teacher", teacher);
     if (teacher) {
-      let message;
+      let message='';
       teacher.dailyLessonsCount.forEach((element) => {
         message += `
           
@@ -68,8 +71,9 @@ bot.on("message", async (msg) => {
 
       bot.sendMessage(
         teacher.chatId,
-        `Bugun <b>${new Date().toLocaleDateString()}</b>
-Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
+        `O'qituvchi ismi: <b>${teacher?.full_name}</b> 
+Bugun <b>${new Date().toLocaleDateString()}</b>
+Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
         { parse_mode: "HTML" }
       );
       // bot.sendMessage(
@@ -122,9 +126,7 @@ async function TeacherName(msg) {
       .then(async (res) => {
         if (res.data.data.pagination.totalCount !== 0) {
           const teacher = await Teacher.findOne({chatId:msg.chat.id})
-          console.log(teacher);
           if(!teacher){
-            console.log(111);
             await Teacher.create({
               chatId: msg.chat.id,
               user_full_name:msg.chat.first_name+' '+msg.chat.last_name,
@@ -135,7 +137,6 @@ async function TeacherName(msg) {
             });
           }
           else{
-            console.log(2222);
             await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {resultByName:res.data.data.items})
           }
           // resultByName = res.data.data.items;
@@ -210,14 +211,15 @@ async function TeacherData(id, opts, msg, full_name) {
           });
 
           if (dailyLessonsCount.size > 0) {
-            await Teacher.updateOne(
+            await Teacher.findOneAndUpdate(
               { chatId: msg.chat.id },
               { dailyLessons, dailyLessonsCount, isThereToday: true }
             );
           } else {
-            await Teacher.updateOne(
+            console.log(dailyLessonsCount);
+            await Teacher.findOneAndUpdate(
               { chatId: msg.chat.id },
-              { dailyLessons, dailyLessonsCount, isThereToday: false }
+              { dailyLessons, dailyLessonsCount:[], isThereToday: false }
             );
           }
 
