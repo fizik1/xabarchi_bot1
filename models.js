@@ -32,6 +32,11 @@ const teacherSchema = new Schema({
     },
     resultByName:{
         type:[]
+    },
+    isActive:{
+        type:Boolean,
+        required:true,
+        default:true
     }
 }, {timestamps:true})
 

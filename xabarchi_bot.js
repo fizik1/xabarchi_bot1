@@ -4,11 +4,7 @@ const mongoose = require("mongoose");
 const Teacher = require("./models");
 require("dotenv").config();
 
-mongoose.connect(
-  process.env.DB_URI,()=>{
-    console.log("Connecting");
-  }
-);
+mongoose.connect(process.env.DB_URI);
 
 const token = process.env.TOKEN,
   hemisToken = process.env.HEMISTOKEN,
@@ -39,19 +35,27 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   if (msg.text == "/start" || msg.text == "Qayta ishga tushirish") {
-    bot.sendMessage(msg.chat.id, 'Ismingizni kiriting: ', {
-      'reply_markup': {
-        'keyboard': [['Qayta ishga tushirish', "Ma'lumotni ko'rish"]],
-        resize_keyboard: true,
-        // one_time_keyboard: true,
-        // force_reply: true,
-      }
-    });
-  } else if (msg.text == "Ma'lumotni ko'rish") {
-    let teacher = await Teacher.findOne({ chatId})
-    console.log("teacher", teacher);
+    let teacher = await Teacher.findOne({ chatId: msg.chat.id });
     if (teacher) {
-      let message='';
+      let keyboard3 = teacher.isActive
+        ? "Bildirishnomani o'chirish"
+        : "Bildirishnomani yoqish";
+      bot.sendMessage(msg.chat.id, "Ismingizni kiriting: ", {
+        reply_markup: {
+          keyboard: [
+            ["Qayta ishga tushirish", "Ma'lumotni ko'rish"],
+            [keyboard3],
+          ],
+          resize_keyboard: true,
+          // one_time_keyboard: true,
+          // force_reply: true,
+        },
+      });
+    }else bot.sendMessage(chatId, "Ismingizni kiriting: ");
+  } else if (msg.text == "Ma'lumotni ko'rish") {
+    let teacher = await Teacher.findOne({ chatId });
+    if (teacher) {
+      let message = "";
       teacher.dailyLessonsCount.forEach((element) => {
         message += `
           
@@ -76,23 +80,46 @@ Bugun <b>${new Date().toLocaleDateString()}</b>
 Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
         { parse_mode: "HTML" }
       );
-      // bot.sendMessage(
-      //   chatId,
-      //   `O'qituvchi ismi: <b>${teacher?.full_name}</b>`,
-      //   { parse_mode: "HTML" }
-      // );
     } else {
-      bot.sendMessage(
-        chatId,
-        "Ma'lumot topilmadi"
-      );
+      bot.sendMessage(chatId, "Ma'lumot topilmadi");
     }
+  } else if (msg.text == "Bildirishnomani o'chirish") {
+    let teacher = await Teacher.findOneAndUpdate(
+      { chatId: msg.chat.id },
+      { isActive: false }
+    );
+    if(teacher){
+      bot.sendMessage(msg.chat.id, "Bildirishnomalar o'chirildi ", {
+        reply_markup: {
+          keyboard: [
+            ["Qayta ishga tushirish", "Ma'lumotni ko'rish"],
+            ["Bildirishnomani yoqish"],
+          ],
+          resize_keyboard: true,
+          // one_time_keyboard: true,
+          // force_reply: true,
+        },
+      });
+    }else bot.sendMessage(chatId, "Ma'lumot topilmadi");
+  } else if (msg.text == "Bildirishnomani yoqish") {
+    let teacher = await Teacher.findOneAndUpdate({ chatId: msg.chat.id }, { isActive: true });
+    if(teacher){
+      bot.sendMessage(msg.chat.id, "Bildirishnomalar yoqildi ", {
+        reply_markup: {
+          keyboard: [
+            ["Qayta ishga tushirish", "Ma'lumotni ko'rish"],
+            ["Bildirishnomani o'chirish"],
+          ],
+          resize_keyboard: true,
+          // one_time_keyboard: true,
+          // force_reply: true,
+        },
+      });
+    }else bot.sendMessage(chatId, "Ma'lumot topilmadi");
   } else {
     await TeacherName(msg);
   }
 });
-
-
 
 bot.on("callback_query", async function onCallbackQuery(callbackQuery) {
   const action = callbackQuery.data;
@@ -101,13 +128,15 @@ bot.on("callback_query", async function onCallbackQuery(callbackQuery) {
     chat_id: msg.chat.id,
     message_id: msg.message_id,
   };
-  let {resultByName} = await Teacher.findOne({chatId:msg.chat.id}).select("resultByName")
+  let { resultByName } = await Teacher.findOne({ chatId: msg.chat.id }).select(
+    "resultByName"
+  );
   resultByName.forEach((item, index) => {
     if (action == index) {
       TeacherData(item.id, opts, msg, item.full_name);
     }
   });
-  await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {resultByName:[]})
+  await Teacher.findOneAndUpdate({ chatId: msg.chat.id }, { resultByName: [] });
 });
 
 async function TeacherName(msg) {
@@ -125,22 +154,24 @@ async function TeacherName(msg) {
       })
       .then(async (res) => {
         if (res.data.data.pagination.totalCount !== 0) {
-          const teacher = await Teacher.findOne({chatId:msg.chat.id})
-          if(!teacher){
+          const teacher = await Teacher.findOne({ chatId: msg.chat.id });
+          if (!teacher) {
             await Teacher.create({
               chatId: msg.chat.id,
-              user_full_name:msg.chat.first_name+' '+msg.chat.last_name,
-              username:msg.chat.username,
+              user_full_name: msg.chat.first_name + " " + msg.chat.last_name,
+              username: msg.chat.username,
               // employeeId: id,
               isThereToday: false,
-              resultByName:res.data.data.items
+              resultByName: res.data.data.items,
             });
-          }
-          else{
-            await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {resultByName:res.data.data.items})
+          } else {
+            await Teacher.findOneAndUpdate(
+              { chatId: msg.chat.id },
+              { resultByName: res.data.data.items }
+            );
           }
           // resultByName = res.data.data.items;
-          let keyboard=[]
+          let keyboard = [];
           res.data.data.items.forEach((element, index) => {
             keyboard.push([{ text: element.full_name, callback_data: index }]);
           });
@@ -184,8 +215,8 @@ async function TeacherData(id, opts, msg, full_name) {
           if (newUser) {
             await Teacher.create({
               chatId: msg.chat.id,
-              user_full_name:msg.chat.first_name+' '+msg.chat.last_name,
-              username:msg.chat.username,
+              user_full_name: msg.chat.first_name + " " + msg.chat.last_name,
+              username: msg.chat.username,
               full_name,
               employeeId: id,
               isThereToday: false,
@@ -216,10 +247,9 @@ async function TeacherData(id, opts, msg, full_name) {
               { dailyLessons, dailyLessonsCount, isThereToday: true }
             );
           } else {
-            console.log(dailyLessonsCount);
             await Teacher.findOneAndUpdate(
               { chatId: msg.chat.id },
-              { dailyLessons, dailyLessonsCount:[], isThereToday: false }
+              { dailyLessons, dailyLessonsCount: [], isThereToday: false }
             );
           }
 
@@ -236,10 +266,11 @@ async function TeacherData(id, opts, msg, full_name) {
        <b>Xona</b>: ${item.auditorium.name}
        <b>Dars turi</b>: ${item.trainingType.name}
        <b>Dars sanasi</b>: ${new Date(
-                  item.lesson_date * 1000
-                ).toLocaleDateString()}
-       <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${item.lessonPair.end_time
-                  }`;
+         item.lesson_date * 1000
+       ).toLocaleDateString()}
+       <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${
+                  item.lessonPair.end_time
+                }`;
               }
             });
           });
@@ -249,15 +280,12 @@ async function TeacherData(id, opts, msg, full_name) {
             `Bugun <b>${dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
             { parse_mode: "HTML" }
           );
-
-
         } else bot.editMessageText("Darslar topilmadi!", opts);
       });
   } catch (error) {
-    console.log(error);
+    throw error
   }
 }
-
 
 //Har minutda malumotni ma'lumotni tekshirish
 setInterval(async () => {
@@ -273,9 +301,8 @@ setInterval(async () => {
     teacher.dailyLessons.forEach((element) => {
       if (
         element.lessonPair.end_time ==
-        `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
-          -2
-        )}`
+          `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` &&
+        teacher.isActive
       ) {
         bot.sendMessage(teacher.chatId, `Dars tugadi`);
       }
@@ -284,9 +311,9 @@ setInterval(async () => {
 
   // Morning message
   if (
-    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
-      -2
-    )}` == `${String(108).slice(-2)}:${String(100).slice(-2)}`
+    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
+      `${String(108).slice(-2)}:${String(100).slice(-2)}` &&
+    teacher.isActive
   ) {
     teachers.forEach((teacher) => {
       let message;
@@ -318,13 +345,11 @@ Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
 
   // Update DataBase
   if (
-    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(
-      -2
-    )}` == `${String(102).slice(-2)}:${String(100).slice(-2)}`
+    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
+    `${String(102).slice(-2)}:${String(100).slice(-2)}`
   ) {
-
-    let allTeachers = await Teacher.find({})
-    allTeachers.forEach(teacher => {
+    let allTeachers = await Teacher.find({});
+    allTeachers.forEach((teacher) => {
       try {
         axios
           .get(url2, {
@@ -344,19 +369,13 @@ Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
 
               res.data.data.items.forEach(async (element, index) => {
                 if (
-                  new Date(
-                    element.lesson_date * 1000
-                  ).toLocaleDateString() ==
+                  new Date(element.lesson_date * 1000).toLocaleDateString() ==
                   new Date(today).toLocaleDateString()
                 ) {
-                  dailyLessonsCount.add(
-                    element.lessonPair.start_time
-                  );
+                  dailyLessonsCount.add(element.lessonPair.start_time);
                   dailyLessons.push(element);
                 }
               });
-
-              console.log(dailyLessonsCount.size);
               if (dailyLessonsCount.size > 0) {
                 await Teacher.findOneAndUpdate(
                   { chatId: teacher.chatId },
@@ -364,7 +383,7 @@ Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
                     dailyLessons,
                     dailyLessonsCount,
                     isThereToday: true,
-                    updateAt: Date.now()
+                    updateAt: Date.now(),
                   }
                 );
               } else {
@@ -374,7 +393,7 @@ Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
                     dailyLessons,
                     dailyLessonsCount,
                     isThereToday: false,
-                    updateAt: Date.now()
+                    updateAt: Date.now(),
                   }
                 );
               }
@@ -384,6 +403,5 @@ Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
         throw error;
       }
     });
-
   }
 }, [60000]);
