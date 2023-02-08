@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": " nodemon xabarchi_bot",
-    "start": " node xabarchi_bot"
+    "start": "node xabarchi_bot"
   },
   "author": "Berdiqulov Shahob",
   "license": "ISC",
