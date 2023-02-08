@@ -72,7 +72,7 @@ bot.on("message", async (msg) => {
           }
         });
       });
-
+      console.log(teacher);
       bot.sendMessage(
         teacher.chatId,
         `O'qituvchi ismi: <b>${teacher?.full_name}</b> 
@@ -208,6 +208,9 @@ async function TeacherData(id, opts, msg, full_name) {
       })
       .then(async (res) => {
         if (res.data.data.pagination.totalCount != 0) {
+          res.data.data.items.forEach(el=>{
+            console.log(new Date(el.lesson_date*1000));
+          })
           let newUser = !Boolean(
             await Teacher.findOne({ chatId: msg.chat.id })
           );
@@ -240,11 +243,12 @@ async function TeacherData(id, opts, msg, full_name) {
               dailyLessons.push(element);
             }
           });
+          console.log(dailyLessonsCount);
 
           if (dailyLessonsCount.size > 0) {
             await Teacher.findOneAndUpdate(
               { chatId: msg.chat.id },
-              { dailyLessons, dailyLessonsCount, isThereToday: true }
+              { dailyLessons, dailyLessonsCount:Array.from(dailyLessonsCount), isThereToday: true }
             );
           } else {
             await Teacher.findOneAndUpdate(
@@ -275,10 +279,23 @@ async function TeacherData(id, opts, msg, full_name) {
             });
           });
           bot.editMessageText("Bot muvaffaqiyatli ishga tushdi", opts);
+          let keyboard3 = dailyLessonsCount.size>0
+        ? "Bildirishnomani o'chirish"
+        : "Bildirishnomani yoqish";
           bot.sendMessage(
             msg.chat.id,
             `Bugun <b>${dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
-            { parse_mode: "HTML" }
+            { parse_mode: "HTML" },  {
+              reply_markup: {
+                keyboard: [
+                  ["Qayta ishga tushirish", "Ma'lumotni ko'rish"],
+                  [keyboard3],
+                ],
+                resize_keyboard: true,
+                // one_time_keyboard: true,
+                // force_reply: true,
+              },
+            }
           );
         } else bot.editMessageText("Darslar topilmadi!", opts);
       });
@@ -286,6 +303,8 @@ async function TeacherData(id, opts, msg, full_name) {
     throw error
   }
 }
+
+
 
 //Har minutda malumotni ma'lumotni tekshirish
 setInterval(async () => {
