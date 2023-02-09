@@ -51,7 +51,7 @@ bot.on("message", async (msg) => {
           // force_reply: true,
         },
       });
-    }else bot.sendMessage(chatId, "Ismingizni kiriting: ");
+    } else bot.sendMessage(chatId, "Ismingizni kiriting: ");
   } else if (msg.text == "Ma'lumotni ko'rish") {
     let teacher = await Teacher.findOne({ chatId });
     if (teacher) {
@@ -88,7 +88,7 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
       { chatId: msg.chat.id },
       { isActive: false }
     );
-    if(teacher){
+    if (teacher) {
       bot.sendMessage(msg.chat.id, "Bildirishnomalar o'chirildi ", {
         reply_markup: {
           keyboard: [
@@ -100,10 +100,13 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
           // force_reply: true,
         },
       });
-    }else bot.sendMessage(chatId, "Ma'lumot topilmadi");
+    } else bot.sendMessage(chatId, "Ma'lumot topilmadi");
   } else if (msg.text == "Bildirishnomani yoqish") {
-    let teacher = await Teacher.findOneAndUpdate({ chatId: msg.chat.id }, { isActive: true });
-    if(teacher){
+    let teacher = await Teacher.findOneAndUpdate(
+      { chatId: msg.chat.id },
+      { isActive: true }
+    );
+    if (teacher) {
       bot.sendMessage(msg.chat.id, "Bildirishnomalar yoqildi ", {
         reply_markup: {
           keyboard: [
@@ -115,7 +118,7 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
           // force_reply: true,
         },
       });
-    }else bot.sendMessage(chatId, "Ma'lumot topilmadi");
+    } else bot.sendMessage(chatId, "Ma'lumot topilmadi");
   } else {
     await TeacherName(msg);
   }
@@ -208,9 +211,9 @@ async function TeacherData(id, opts, msg, full_name) {
       })
       .then(async (res) => {
         if (res.data.data.pagination.totalCount != 0) {
-          res.data.data.items.forEach(el=>{
-            console.log(new Date(el.lesson_date*1000));
-          })
+          res.data.data.items.forEach((el) => {
+            console.log(new Date(el.lesson_date * 1000));
+          });
           let newUser = !Boolean(
             await Teacher.findOne({ chatId: msg.chat.id })
           );
@@ -248,7 +251,11 @@ async function TeacherData(id, opts, msg, full_name) {
           if (dailyLessonsCount.size > 0) {
             await Teacher.findOneAndUpdate(
               { chatId: msg.chat.id },
-              { dailyLessons, dailyLessonsCount:Array.from(dailyLessonsCount), isThereToday: true }
+              {
+                dailyLessons,
+                dailyLessonsCount: Array.from(dailyLessonsCount),
+                isThereToday: true,
+              }
             );
           } else {
             await Teacher.findOneAndUpdate(
@@ -279,17 +286,14 @@ async function TeacherData(id, opts, msg, full_name) {
             });
           });
           bot.editMessageText("Bot muvaffaqiyatli ishga tushdi", opts);
-          let keyboard3 = dailyLessonsCount.size>0
-        ? "Bildirishnomani o'chirish"
-        : "Bildirishnomani yoqish";
           bot.sendMessage(
             msg.chat.id,
             `Bugun <b>${dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
-            { parse_mode: "HTML" },  {
+            { parse_mode: "HTML",
               reply_markup: {
                 keyboard: [
                   ["Qayta ishga tushirish", "Ma'lumotni ko'rish"],
-                  [keyboard3],
+                  ["Bildirishnomani o'chirish"],
                 ],
                 resize_keyboard: true,
                 // one_time_keyboard: true,
@@ -297,16 +301,16 @@ async function TeacherData(id, opts, msg, full_name) {
               },
             }
           );
-        } else bot.editMessageText("Darslar topilmadi!", opts);
+        } else {
+          bot.editMessageText("Darslar topilmadi!", opts);
+        }
       });
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 
-
-
-//Har minutda malumotni ma'lumotni tekshirish
+//Har minutda ma'lumotni tekshirish
 setInterval(async () => {
   let hour = new Date().getHours(),
     minut = new Date().getMinutes();
@@ -331,11 +335,10 @@ setInterval(async () => {
   // Morning message
   if (
     `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
-      `${String(108).slice(-2)}:${String(100).slice(-2)}` &&
-    teacher.isActive
+    `${String(108).slice(-2)}:${String(100).slice(-2)}`
   ) {
     teachers.forEach((teacher) => {
-      let message;
+      let message = "";
       teacher.dailyLessonsCount.forEach((element) => {
         message += `
           
@@ -356,17 +359,47 @@ setInterval(async () => {
       bot.sendMessage(
         teacher.chatId,
         `Bugun <b>${new Date().toLocaleDateString()}</b>
-Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
+Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
         { parse_mode: "HTML" }
       );
     });
-  }
-
-  // Update DataBase
-  if (
+  } else if (
+    `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
+    `${String(120).slice(-2)}:${String(100).slice(-2)}`
+  ) {
+    // Evening message
+    teachers.forEach(async(teacher) => {
+      let message = "";
+      await teacher.dailyLessonsCount.forEach((element) => {
+        message += `
+          
+<b style="color:blue;text-align:center">🕰${element}</b>`;
+        teacher.dailyLessons.forEach((item, key) => {
+          if (item.lessonPair.start_time == element) {
+            message += `
+📎<b>Fan</b>: ${item.subject.name}
+      <b>Fakultet</b>: ${item.faculty.name}
+      <b>Guruh</b>: ${item.group.name}
+      <b>Xona</b>: ${item.auditorium.name}
+      <b>Dars turi</b>: ${item.trainingType.name}
+      <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${item.lessonPair.end_time}`;
+          }
+        });
+      });
+      console.log(teacher);
+      bot.sendMessage(
+        teacher.chatId,
+        `Bugun <b>${new Date().toLocaleDateString()}</b>
+Bugun <b>${teacher.dailyLessonsCount.length}</b> para dars o'tdingiz.
+Hemis tizimida davomat qilishni unutmang ${message}`,
+        { parse_mode: "HTML" }
+      );
+    });
+  }else if (
     `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
     `${String(102).slice(-2)}:${String(100).slice(-2)}`
-  ) {
+    ) {
+    // Update DataBase
     let allTeachers = await Teacher.find({});
     allTeachers.forEach((teacher) => {
       try {
@@ -400,7 +433,7 @@ Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
                   { chatId: teacher.chatId },
                   {
                     dailyLessons,
-                    dailyLessonsCount,
+                    dailyLessonsCount:Array.from(dailyLessonsCount),
                     isThereToday: true,
                     updateAt: Date.now(),
                   }
@@ -410,7 +443,7 @@ Bugun <b>${teacher.dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
                   { chatId: teacher.chatId },
                   {
                     dailyLessons,
-                    dailyLessonsCount,
+                    dailyLessonsCount:[],
                     isThereToday: false,
                     updateAt: Date.now(),
                   }
