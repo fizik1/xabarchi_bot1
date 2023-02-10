@@ -37,7 +37,14 @@ const teacherSchema = new Schema({
         type:Boolean,
         required:true,
         default:true
-    }
+    },
+    department:{
+        type:Map
+    },
+    image:{
+        type:String
+    },
+    
 }, {timestamps:true})
 
 module.exports = model("Teacher", teacherSchema)

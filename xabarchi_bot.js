@@ -134,8 +134,13 @@ bot.on("callback_query", async function onCallbackQuery(callbackQuery) {
   let { resultByName } = await Teacher.findOne({ chatId: msg.chat.id }).select(
     "resultByName"
   );
-  resultByName.forEach((item, index) => {
+  resultByName.forEach(async (item, index) => {
     if (action == index) {
+      console.log("item", item);
+      await Teacher.findOneAndUpdate(
+        { chatId: msg.chat.id },
+        { department:item.department, image:item.image }
+      );
       TeacherData(item.id, opts, msg, item.full_name);
     }
   });
@@ -211,9 +216,6 @@ async function TeacherData(id, opts, msg, full_name) {
       })
       .then(async (res) => {
         if (res.data.data.pagination.totalCount != 0) {
-          res.data.data.items.forEach((el) => {
-            console.log(new Date(el.lesson_date * 1000));
-          });
           let newUser = !Boolean(
             await Teacher.findOne({ chatId: msg.chat.id })
           );
@@ -246,7 +248,6 @@ async function TeacherData(id, opts, msg, full_name) {
               dailyLessons.push(element);
             }
           });
-          console.log(dailyLessonsCount);
 
           if (dailyLessonsCount.size > 0) {
             await Teacher.findOneAndUpdate(
@@ -335,7 +336,7 @@ setInterval(async () => {
   // Morning message
   if (
     `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
-    `${String(108).slice(-2)}:${String(100).slice(-2)}`
+    `${String(107).slice(-2)}:${String(100).slice(-2)}`
   ) {
     teachers.forEach((teacher) => {
       let message = "";
@@ -365,7 +366,7 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
     });
   } else if (
     `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
-    `${String(120).slice(-2)}:${String(100).slice(-2)}`
+    `${String(121).slice(-2)}:${String(100).slice(-2)}`
   ) {
     // Evening message
     teachers.forEach(async(teacher) => {
