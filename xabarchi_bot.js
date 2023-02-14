@@ -1,10 +1,10 @@
 const axios = require("axios");
 const TelegramBot = require("node-telegram-bot-api");
 const mongoose = require("mongoose");
-const Teacher = require("./models");
+const Teacher = require("./models/teacherModel");
 require("dotenv").config();
 
-mongoose.connect(process.env.DB_URI);
+
 
 const token = process.env.TOKEN,
   hemisToken = process.env.HEMISTOKEN,
