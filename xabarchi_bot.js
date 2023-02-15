@@ -1,9 +1,9 @@
 const axios = require("axios");
 const TelegramBot = require("node-telegram-bot-api");
-const mongoose = require("mongoose");
+const connectDB = require("./config/db");
 const Teacher = require("./models/teacherModel");
 require("dotenv").config();
-
+connectDB()
 
 
 const token = process.env.TOKEN,
@@ -215,6 +215,10 @@ async function TeacherData(id, opts, msg, full_name) {
         },
       })
       .then(async (res) => {
+        res.data.data.items.forEach(el=>{
+          console.log(new Date(el.lesson_date*1000));
+        })
+        // console.log(res.data.data.items);
         if (res.data.data.pagination.totalCount != 0) {
           let newUser = !Boolean(
             await Teacher.findOne({ chatId: msg.chat.id })

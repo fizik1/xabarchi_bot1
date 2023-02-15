@@ -9,6 +9,9 @@ connectDB()
 
 const PORT = process.env.PORT
 
+//Initialize public folder
+app.use(express.static('public'))
+
 //Initialize Handlebars
 app.engine(
     "hbs",

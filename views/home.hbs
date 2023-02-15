@@ -1,6 +1,49 @@
 <h1>Example App: Home</h1>
 <div>
-    {{#each departments}}
-    <div>{{log name}}</div>
+  <form action="/" method="get">
+    <select name="faculty" onchange="this.form.submit()">
+      <option value="">Barcha fakultetlar</option>
+      {{#each faculties}}
+        <option value={{this.id}}>{{this.name}}</option>
+      {{/each}}
+    </select>
+    <select name="kafedra" onchange="this.form.submit()">
+      <option value="">Barcha kafedralar</option>
+      {{#each kafedra}}
+        <option value={{this.id}}>{{this.name}}</option>
+      {{/each}}
+    </select>
+    <input type="text" name="name">
+    <button type="submit">Izlash</button>
+  </form>
+</div>
+<div>
+  <ul>
+    {{#each teachers}}
+      <li>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div
+              class="w-16 border rounded-full overflow-hidden flex items-center justify-center"
+            >
+              {{#if this.image}}
+                <img src={{this.image}} alt="avatar" />
+              {{else}}
+                <img src="./images/avatar.png" alt="" />
+              {{/if}}
+            </div>
+            <div>{{this.full_name}}</div>
+          </div>
+          <div>
+            {{#if this.isActive}}
+              Faol
+            {{else}}
+              Nofaol
+            {{/if}}
+          </div>
+        </div>
+      </li>
     {{/each}}
+
+  </ul>
 </div>
