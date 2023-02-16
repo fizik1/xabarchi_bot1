@@ -5,6 +5,1206 @@ const Teacher = require("./models/teacherModel");
 require("dotenv").config();
 connectDB()
 
+let datas = {
+  "success": true,
+  "error": null,
+  "data": {
+    "items": [
+      {
+        "id": 433194,
+        "subject": {
+          "id": 3429,
+          "name": "XIX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "14",
+          "name": "4-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1230,
+          "name": "RUS_FIL_YEVRO_2021_03"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 805,
+          "name": "Fil-ru 31"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "15",
+          "name": "5",
+          "start_time": "14:30",
+          "end_time": "15:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1675641600,
+        "weekEndTime": 1676073600,
+        "lesson_date": 1675814400,
+        "_week": 45942
+      },
+      {
+        "id": 433191,
+        "subject": {
+          "id": 3429,
+          "name": "XIX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "14",
+          "name": "4-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1228,
+          "name": "RUS_FIL_YEVRO_2021_01"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 800,
+          "name": "Fil-ru 23"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "16",
+          "name": "6",
+          "start_time": "16:00",
+          "end_time": "17:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1675641600,
+        "weekEndTime": 1676073600,
+        "lesson_date": 1675814400,
+        "_week": 45942
+      },
+      {
+        "id": 437462,
+        "subject": {
+          "id": 7663,
+          "name": "Umumta'lim  maktablarda rus tili va adabiyoti 5-9 sinflarda o'quv darsliklarini urganish mahiyati"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 37,
+          "name": "RUS_FIL_NATS_2020_07"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 34,
+          "name": "Fakultetlararo rus tili ",
+          "code": "312-110-10",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 805,
+          "name": "Fil-ru 31"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "12",
+          "name": "2",
+          "start_time": "09:30",
+          "end_time": "10:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1675814400,
+        "weekEndTime": 1676073600,
+        "lesson_date": 1675900800,
+        "_week": 9385
+      },
+      {
+        "id": 436319,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1410,
+          "name": "RUS_FIL_YEVRO_2020_17"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 808,
+          "name": "Fil-ru 34"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "13",
+          "name": "3",
+          "start_time": "11:00",
+          "end_time": "12:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1675814400,
+        "weekEndTime": 1676073600,
+        "lesson_date": 1675987200,
+        "_week": 9177
+      },
+      {
+        "id": 436287,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 27,
+          "name": "RUS_FIL_YEVRO_2020_02"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 807,
+          "name": "Fil-ru 33"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "11",
+          "name": "1",
+          "start_time": "08:00",
+          "end_time": "09:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676246400,
+        "_week": 9178
+      },
+      {
+        "id": 436378,
+        "subject": {
+          "id": 7663,
+          "name": "Umumta'lim  maktablarda rus tili va adabiyoti 5-9 sinflarda o'quv darsliklarini urganish mahiyati"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 35,
+          "name": "RUS_FIL_YEVRO_2020_05"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 34,
+          "name": "Fakultetlararo rus tili ",
+          "code": "312-110-10",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 808,
+          "name": "Fil-ru 34"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "12",
+          "name": "2",
+          "start_time": "09:30",
+          "end_time": "10:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676246400,
+        "_week": 9178
+      },
+      {
+        "id": 437478,
+        "subject": {
+          "id": 7663,
+          "name": "Umumta'lim  maktablarda rus tili va adabiyoti 5-9 sinflarda o'quv darsliklarini urganish mahiyati"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 37,
+          "name": "RUS_FIL_NATS_2020_07"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 34,
+          "name": "Fakultetlararo rus tili ",
+          "code": "312-110-10",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 801,
+          "name": "Fil-ru 24"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "13",
+          "name": "3",
+          "start_time": "11:00",
+          "end_time": "12:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676246400,
+        "_week": 9386
+      },
+      {
+        "id": 441986,
+        "subject": {
+          "id": 3429,
+          "name": "XIX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "14",
+          "name": "4-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1229,
+          "name": "RUS_FIL_YEVRO_2021_02"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 807,
+          "name": "Fil-ru 33"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "14",
+          "name": "4",
+          "start_time": "13:00",
+          "end_time": "14:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676246400,
+        "_week": 45943
+      },
+      {
+        "id": 436280,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 26,
+          "name": "RUS_FIL_YEVRO_2020_01"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 800,
+          "name": "Fil-ru 23"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "12",
+          "name": "2",
+          "start_time": "09:30",
+          "end_time": "10:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676332800,
+        "_week": 9178
+      },
+      {
+        "id": 436304,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 32,
+          "name": "RUS_FIL_YEVRO_2020_03"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 807,
+          "name": "Fil-ru 33"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "13",
+          "name": "3",
+          "start_time": "11:00",
+          "end_time": "12:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676332800,
+        "_week": 9178
+      },
+      {
+        "id": 442002,
+        "subject": {
+          "id": 3429,
+          "name": "XIX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "14",
+          "name": "4-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1230,
+          "name": "RUS_FIL_YEVRO_2021_03"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 805,
+          "name": "Fil-ru 31"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "15",
+          "name": "5",
+          "start_time": "14:30",
+          "end_time": "15:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676419200,
+        "_week": 45943
+      },
+      {
+        "id": 441971,
+        "subject": {
+          "id": 3429,
+          "name": "XIX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "14",
+          "name": "4-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1228,
+          "name": "RUS_FIL_YEVRO_2021_01"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 800,
+          "name": "Fil-ru 23"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "16",
+          "name": "6",
+          "start_time": "16:00",
+          "end_time": "17:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676419200,
+        "_week": 45943
+      },
+      {
+        "id": 437473,
+        "subject": {
+          "id": 7663,
+          "name": "Umumta'lim  maktablarda rus tili va adabiyoti 5-9 sinflarda o'quv darsliklarini urganish mahiyati"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 37,
+          "name": "RUS_FIL_NATS_2020_07"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 34,
+          "name": "Fakultetlararo rus tili ",
+          "code": "312-110-10",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 805,
+          "name": "Fil-ru 31"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "12",
+          "name": "2",
+          "start_time": "09:30",
+          "end_time": "10:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676505600,
+        "_week": 9386
+      },
+      {
+        "id": 436327,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1410,
+          "name": "RUS_FIL_YEVRO_2020_17"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 808,
+          "name": "Fil-ru 34"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "13",
+          "name": "3",
+          "start_time": "11:00",
+          "end_time": "12:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676246400,
+        "weekEndTime": 1676678400,
+        "lesson_date": 1676592000,
+        "_week": 9178
+      },
+      {
+        "id": 446154,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 27,
+          "name": "RUS_FIL_YEVRO_2020_02"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 807,
+          "name": "Fil-ru 33"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "11",
+          "name": "1",
+          "start_time": "08:00",
+          "end_time": "09:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676851200,
+        "weekEndTime": 1679702400,
+        "lesson_date": 1676851200,
+        "_week": 9179
+      },
+      {
+        "id": 446212,
+        "subject": {
+          "id": 7663,
+          "name": "Umumta'lim  maktablarda rus tili va adabiyoti 5-9 sinflarda o'quv darsliklarini urganish mahiyati"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 35,
+          "name": "RUS_FIL_YEVRO_2020_05"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 34,
+          "name": "Fakultetlararo rus tili ",
+          "code": "312-110-10",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 808,
+          "name": "Fil-ru 34"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "12",
+          "name": "2",
+          "start_time": "09:30",
+          "end_time": "10:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676851200,
+        "weekEndTime": 1679702400,
+        "lesson_date": 1676851200,
+        "_week": 9179
+      },
+      {
+        "id": 446140,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 26,
+          "name": "RUS_FIL_YEVRO_2020_01"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 800,
+          "name": "Fil-ru 23"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "12",
+          "name": "2",
+          "start_time": "09:30",
+          "end_time": "10:50"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676851200,
+        "weekEndTime": 1679702400,
+        "lesson_date": 1676937600,
+        "_week": 9179
+      },
+      {
+        "id": 446182,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 32,
+          "name": "RUS_FIL_YEVRO_2020_03"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 807,
+          "name": "Fil-ru 33"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "13",
+          "name": "3",
+          "start_time": "11:00",
+          "end_time": "12:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676851200,
+        "weekEndTime": 1679702400,
+        "lesson_date": 1676937600,
+        "_week": 9179
+      },
+      {
+        "id": 446224,
+        "subject": {
+          "id": 3430,
+          "name": "XX asr rus adabiyoti tarixi"
+        },
+        "semester": {
+          "code": "16",
+          "name": "6-semestr"
+        },
+        "educationYear": {
+          "code": "2022",
+          "name": "2022-2023",
+          "current": true
+        },
+        "group": {
+          "id": 1410,
+          "name": "RUS_FIL_YEVRO_2020_17"
+        },
+        "faculty": {
+          "id": 12,
+          "name": "Filologiya fakulteti",
+          "code": "312-110",
+          "structureType": {
+            "code": "11",
+            "name": "Fakultet"
+          },
+          "parent": null
+        },
+        "department": {
+          "id": 129,
+          "name": "Rus va chet el adabiyoti ",
+          "code": "312-110-12",
+          "structureType": {
+            "code": "12",
+            "name": "Kafedra"
+          },
+          "parent": 12
+        },
+        "auditorium": {
+          "code": 808,
+          "name": "Fil-ru 34"
+        },
+        "trainingType": {
+          "code": "13",
+          "name": "Amaliy"
+        },
+        "lessonPair": {
+          "code": "13",
+          "name": "3",
+          "start_time": "11:00",
+          "end_time": "12:20"
+        },
+        "employee": {
+          "id": 497,
+          "name": "SIDDIKOVA I. I."
+        },
+        "weekStartTime": 1676851200,
+        "weekEndTime": 1679702400,
+        "lesson_date": 1677196800,
+        "_week": 9179
+      }
+    ],
+    "pagination": {
+      "totalCount": 239,
+      "pageSize": 20,
+      "pageCount": 12,
+      "page": 12
+    }
+  },
+  "code": 200
+}
+
+// let datas1 = JSON.parse(datas)
+datas.data.items.forEach(el=>{
+  // console.log(el);
+  console.log(new Date(el.lesson_date*1000));
+})
+
 
 const token = process.env.TOKEN,
   hemisToken = process.env.HEMISTOKEN,
@@ -213,6 +1413,18 @@ async function TeacherData(id, opts, msg, full_name) {
           limit: 200,
           _employee: id,
         },
+      }).then(async res1=>{
+        await axios
+      .get(url2, {
+        headers: {
+          accept: "application/json",
+          authorization: "Bearer " + hemisToken,
+        },
+        params: {
+          limit: 200,
+          _employee: id,
+          page:res1.data.data.pagination.pageCount
+        },
       })
       .then(async (res) => {
         res.data.data.items.forEach(el=>{
@@ -310,6 +1522,8 @@ async function TeacherData(id, opts, msg, full_name) {
           bot.editMessageText("Darslar topilmadi!", opts);
         }
       });
+      })
+    
   } catch (error) {
     throw error;
   }
