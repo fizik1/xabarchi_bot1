@@ -18,42 +18,58 @@ router.get("/", async (req, res) => {
     // })
     console.log(req.query);
     if (req.query.faculty) {
-      console.log(1);
       const departments = await Department.find().lean();
       const teachers = await Teacher.find({
-        "department.parent": req.query.faculty,
+        "department.parent": Number(req.query.faculty),
       }).lean();
-      console.log(teachers);
+      console.log(departments.filter(el=>el.id==req.query.faculty));
       res.render("home", {
         faculties: departments.filter((el) => el.structureType.code == 11),
         kafedra: departments.filter((el) => el.structureType.code == 12),
         teachers: teachers.filter((el) => el.full_name != undefined),
+        query:departments.filter(el=>el.id==req.query.faculty)[0].name
       });
     } else if (req.query.kafedra) {
-      console.log(2);
       const departments = await Department.find().lean();
-      const teachers = await Teacher.find({
-        "department.id": req.query.kafedra,
-      }).lean();
+      const teachers = await Teacher.find({"department.id": Number(req.query.kafedra)}).lean();
+      res.render("home", {
+        faculties: departments.filter((el) => el.structureType.code == 11),
+        kafedra: departments.filter((el) => el.structureType.code == 12),
+        teachers: teachers.filter((el) => el.full_name != undefined),
+        query:departments.filter(el=>el.id==req.query.kafedra)[0].name
+
+      });
+    }else if(req.query.name){
+      const departments = await Department.find().lean();
+      const teachers = await Teacher.searchPartial(req.query.name, (err, data) => {
+        if (err) throw new Error();
+      })
       console.log(teachers);
       res.render("home", {
         faculties: departments.filter((el) => el.structureType.code == 11),
         kafedra: departments.filter((el) => el.structureType.code == 12),
         teachers: teachers.filter((el) => el.full_name != undefined),
+        query:req.query.name
       });
     } else {
-      console.log(3);
       const departments = await Department.find().lean();
       const teachers = await Teacher.find().lean();
       res.render("home", {
         faculties: departments.filter((el) => el.structureType.code == 11),
         kafedra: departments.filter((el) => el.structureType.code == 12),
         teachers: teachers.filter((el) => el.full_name != undefined),
+        query:"Hammasi"
       });
     }
   } catch (error) {
-    console.log(error);
-    res.send("Xatolik");
+    const departments = await Department.find().lean();
+      const teachers = await Teacher.find().lean();
+      res.render("home", {
+        faculties: departments.filter((el) => el.structureType.code == 11),
+        kafedra: departments.filter((el) => el.structureType.code == 12),
+        teachers: teachers.filter((el) => el.full_name != undefined),
+        query:"Hammasi"
+      });
   }
 });
 

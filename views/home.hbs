@@ -1,30 +1,72 @@
-<h1>Example App: Home</h1>
-<div>
-  <form action="/" method="get">
-    <select name="faculty" onchange="this.form.submit()">
+<div class="fixed w-full bg-white flex items-center justify-center shadow-lg">
+  <form
+    action="/"
+    method="get"
+    class="max-w-7xl flex justify-between gap-5 p-5"
+  >
+    <select
+      name="faculty"
+      onchange="this.form.submit()"
+      class="px-2 py-1 border rounded-md"
+    >
       <option value="">Barcha fakultetlar</option>
       {{#each faculties}}
         <option value={{this.id}}>{{this.name}}</option>
       {{/each}}
     </select>
-    <select name="kafedra" onchange="this.form.submit()">
+    <select
+      name="kafedra"
+      onchange="this.form.submit()"
+      class="px-2 py-1 border rounded-md"
+    >
       <option value="">Barcha kafedralar</option>
       {{#each kafedra}}
         <option value={{this.id}}>{{this.name}}</option>
       {{/each}}
     </select>
-    <input type="text" name="name">
-    <button type="submit">Izlash</button>
+    <input
+      type="text"
+      name="name"
+      class="px-2 py-1 border rounded-md"
+      placeholder="Izlash"
+    />
+    <button
+      class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+      type="submit"
+    >
+      Izlash
+    </button>
   </form>
 </div>
-<div>
-  <ul>
+<div class="max-w-7xl mx-auto text-sm pt-20">
+  <div class="text-xl font-medium my-5">
+    <h1>So'rov: {{query}}</h1>
+    <h1>Natijalar soni:{{teachers.length}}</h1>
+  </div>
+  <ul class="flex flex-col gap-3">
+    <li class="bg-white px-5 py-2 rounded-lg text-lg font-medium">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center w-full">
+          <div
+            class="w-16 border rounded-lg overflow-hidden flex items-center justify-center mr-3"
+          >
+            rasm
+          </div>
+          <div class="w-1/3 ">Ism</div>
+          <div class="w-1/3">Kafedra</div>
+          <div class="w-1/3">Telegram name</div>
+        </div>
+        <div>
+          Bildirishnoma
+        </div>
+      </div>
+    </li>
     {{#each teachers}}
-      <li>
+      <li class="bg-white px-5 py-2 rounded-lg">
         <div class="flex items-center justify-between">
-          <div class="flex items-center">
+          <div class="flex items-center w-full">
             <div
-              class="w-16 border rounded-full overflow-hidden flex items-center justify-center"
+              class="w-16 border rounded-lg overflow-hidden flex items-center justify-center mr-3"
             >
               {{#if this.image}}
                 <img src={{this.image}} alt="avatar" />
@@ -32,13 +74,19 @@
                 <img src="./images/avatar.png" alt="" />
               {{/if}}
             </div>
-            <div>{{this.full_name}}</div>
+            <div class="w-1/3 text-lg">{{this.full_name}}</div>
+            <div class="w-1/3">{{this.department.name}}</div>
+            <div class="w-1/3">{{this.user_full_name}}</div>
           </div>
-          <div>
+          <div class="w-28 flex justify-center">
             {{#if this.isActive}}
-              Faol
+              <span
+                class="bg-[#38CE8F] text-white py-1 px-3 rounded-full font-semibold"
+              >faol</span>
             {{else}}
-              Nofaol
+              <span
+                class="bg-[#E36B56] text-white py-1 px-3 rounded-full font-semibold"
+              >nofaol</span>
             {{/if}}
           </div>
         </div>
