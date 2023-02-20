@@ -4,90 +4,95 @@ const Teacher = require("../models/teacherModel");
 const Admin = require("../models/adminModel");
 const Department = require("../models/departmentModel");
 const axios = require("axios");
-let bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 
 router.get("/", async (req, res) => {
   try {
-    // const teachers = await Teacher.find()
-    // console.log(teachers);
-    // await axios.get("https://student.samdu.uz/rest/v1/data/department-list?limit=200", {headers:{
-    //     Authorization:"Bearer WQcaynOQ4pZQAyQuIMP480qfOJ_ZLvvk"
-    // }}).then(res=>{
-    //     console.log(res.data.data.items);
-    //     res.data.data.items.forEach(async element => {
-    //         await Department.create(element)
-    //     });
-    // })
-    console.log(req.query);
-    if (req.query.faculty) {
-      const departments = await Department.find().lean();
-      const teachers = await Teacher.find({
-        "department.parent": Number(req.query.faculty),
-      }).lean();
-      console.log(departments.filter(el=>el.id==req.query.faculty));
-      res.render("home", {
-        faculties: departments.filter((el) => el.structureType.code == 11),
-        kafedra: departments.filter((el) => el.structureType.code == 12),
-        teachers: teachers.filter((el) => el.full_name != undefined),
-        query:departments.filter(el=>el.id==req.query.faculty)[0].name
-      });
-    } else if (req.query.kafedra) {
-      const departments = await Department.find().lean();
-      const teachers = await Teacher.find({"department.id": Number(req.query.kafedra)}).lean();
-      res.render("home", {
-        faculties: departments.filter((el) => el.structureType.code == 11),
-        kafedra: departments.filter((el) => el.structureType.code == 12),
-        teachers: teachers.filter((el) => el.full_name != undefined),
-        query:departments.filter(el=>el.id==req.query.kafedra)[0].name
-
-      });
-    }else if(req.query.name){
-      const departments = await Department.find().lean();
-      const teachers = await Teacher.searchPartial(req.query.name, (err, data) => {
-        if (err) throw new Error();
-      })
-      console.log(teachers);
-      res.render("home", {
-        faculties: departments.filter((el) => el.structureType.code == 11),
-        kafedra: departments.filter((el) => el.structureType.code == 12),
-        teachers: teachers.filter((el) => el.full_name != undefined),
-        query:req.query.name
-      });
-    } else {
-      const departments = await Department.find().lean();
-      const teachers = await Teacher.find().lean();
-      res.render("home", {
-        faculties: departments.filter((el) => el.structureType.code == 11),
-        kafedra: departments.filter((el) => el.structureType.code == 12),
-        teachers: teachers.filter((el) => el.full_name != undefined),
-        query:"Hammasi"
-      });
-    }
+    if(req.session.isLogged){
+      if (req.query.faculty) {
+        const departments = await Department.find().lean();
+        const teachers = await Teacher.find({
+          "department.parent": Number(req.query.faculty),
+        }).lean();
+        res.render("home", {
+          faculties: departments.filter((el) => el.structureType.code == 11),
+          kafedra: departments.filter((el) => el.structureType.code == 12),
+          teachers: teachers.filter((el) => el.full_name != undefined),
+          query: departments.filter((el) => el.id == req.query.faculty)[0].name,
+        });
+      } else if (req.query.kafedra) {
+        const departments = await Department.find().lean();
+        const teachers = await Teacher.find({
+          "department.id": Number(req.query.kafedra),
+        }).lean();
+        res.render("home", {
+          faculties: departments.filter((el) => el.structureType.code == 11),
+          kafedra: departments.filter((el) => el.structureType.code == 12),
+          teachers: teachers.filter((el) => el.full_name != undefined),
+          query: departments.filter((el) => el.id == req.query.kafedra)[0].name,
+        });
+      } else if (req.query.name) {
+        const departments = await Department.find().lean();
+        const teachers = await Teacher.searchPartial(
+          req.query.name,
+          (err, data) => {
+            if (err) throw new Error();
+          }
+        );
+        res.render("home", {
+          faculties: departments.filter((el) => el.structureType.code == 11),
+          kafedra: departments.filter((el) => el.structureType.code == 12),
+          teachers: teachers.filter((el) => el.full_name != undefined),
+          query: req.query.name,
+        });
+      } else {
+        const departments = await Department.find().lean();
+        const teachers = await Teacher.find().lean();
+        res.render("home", {
+          faculties: departments.filter((el) => el.structureType.code == 11),
+          kafedra: departments.filter((el) => el.structureType.code == 12),
+          teachers: teachers.filter((el) => el.full_name != undefined),
+          query: "Hammasi",
+        });
+      }
+    }else res.redirect("login")
+    
   } catch (error) {
-    const departments = await Department.find().lean();
-      const teachers = await Teacher.find().lean();
-      res.render("home", {
-        faculties: departments.filter((el) => el.structureType.code == 11),
-        kafedra: departments.filter((el) => el.structureType.code == 12),
-        teachers: teachers.filter((el) => el.full_name != undefined),
-        query:"Hammasi"
-      });
+    if(error) throw error
+    res.render("login");
   }
 });
 
+router.get("/login", (req, res) => {
+  res.render("login");
+});
 
-router.post("/login", async(req, res)=>{
+router.post("/login", async (req, res) => {
   try {
-    console.log(req.body);
-    const { password } =req.body
-  let salt = bcrypt.genSaltSync(10);
-  let hash = bcrypt.hashSync(password, salt);
-  res.send(password)
+    const { password, login } = req.body;
 
-    // const admin = await Admin.find({login})
+    const admin = await Admin.findOne({ login });
+    if (admin) {
+      if (bcrypt.compareSync(password, admin.password)) {
+        const admin = await Admin.findOne({login}).select("-password")
+        req.session.admin = admin
+        req.session.isLogged=true
+        req.session.save(err=>{
+          if(err) throw err
+          res.redirect("/")
+        })
+      } else res.render("login", {
+        message:"Login yoki parol xato"
+      });
+    } else res.render("login", {
+      message:"Login yoki parol xato"
+    });
   } catch (error) {
-    res.status(400).json({message:error.message})
+    if(error) throw error
+    res.render("login", {
+      message:"Login yoki parol xato"
+    });
   }
-})
+});
 
 module.exports = router;

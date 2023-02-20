@@ -1,0 +1,33 @@
+<div class="w-screen h-screen flex justify-center items-center">
+  <div class="p-5 bg-white w-96 border-t-4 border-t-[#00A65A] text-sm">
+    <form
+      action="login"
+      method="POST"
+      enctype="application/json"
+      class="flex flex-col gap-2"
+    >
+      <label for="login">
+        Login
+      </label>
+      <input
+        type="text"
+        name="login"
+        id="login"
+        class="border border-[#3C8DBC] px-2 py-1 outline-none focus:border-[#00A65A]"
+      />
+      <label for="password">
+        Parol
+      </label>
+      <input
+        type="password"
+        name="password"
+        id="password"
+        class="border border-[#3C8DBC] px-2 py-1 outline-none focus:border-[#00A65A]"
+      />
+      <button type="submit" class="bg-[#3C8DBC] text-white p-2">Kirish</button>
+      {{#if message}}
+        <div class="text-red-500">{{this.message}}</div>
+      {{/if}}
+    </form>
+  </div>
+</div>

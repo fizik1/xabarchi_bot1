@@ -5,7 +5,7 @@ const Teacher = require("./models/teacherModel");
 require("dotenv").config();
 
 //Connecting database
-connectDB()
+connectDB();
 
 const token = process.env.TOKEN,
   hemisToken = process.env.HEMISTOKEN,
@@ -138,7 +138,7 @@ bot.on("callback_query", async function onCallbackQuery(callbackQuery) {
     if (action == index) {
       await Teacher.findOneAndUpdate(
         { chatId: msg.chat.id },
-        { department:item.department, image:item.image }
+        { department: item.department, image: item.image }
       );
       TeacherData(item.id, opts, msg, item.full_name);
     }
@@ -212,77 +212,79 @@ async function TeacherData(id, opts, msg, full_name) {
           limit: 200,
           _employee: id,
         },
-      }).then(async res1=>{
-        await axios
-      .get(url2, {
-        headers: {
-          accept: "application/json",
-          authorization: "Bearer " + hemisToken,
-        },
-        params: {
-          limit: 200,
-          _employee: id,
-          page:res1.data.data.pagination.pageCount
-        },
       })
-      .then(async (res) => {
-        if (res.data.data.pagination.totalCount != 0) {
-          let newUser = !Boolean(
-            await Teacher.findOne({ chatId: msg.chat.id })
-          );
+      .then(async (res0) => {
+        await axios
+          .get(url2, {
+            headers: {
+              accept: "application/json",
+              authorization: "Bearer " + hemisToken,
+            },
+            params: {
+              limit: 200,
+              _employee: id,
+              page: res0.data.data.pagination.pageCount,
+            },
+          })
+          .then(async (res) => {
+            if (res.data.data.pagination.totalCount != 0) {
+              let newUser = !Boolean(
+                await Teacher.findOne({ chatId: msg.chat.id })
+              );
 
-          if (newUser) {
-            await Teacher.create({
-              chatId: msg.chat.id,
-              user_full_name: msg.chat.first_name + " " + msg.chat.last_name,
-              username: msg.chat.username,
-              full_name,
-              employeeId: id,
-              isThereToday: false,
-            });
-          } else {
-            await Teacher.updateOne(
-              { chatId: msg.chat.id },
-              { full_name, employeeId: id, isThereToday: false }
-            );
-          }
-
-          let dailyLessonsCount = new Set();
-          let dailyLessons = [];
-
-          res.data.data.items.forEach(async (element, index) => {
-            if (
-              new Date(element.lesson_date * 1000).toLocaleDateString() ==
-              new Date(today).toLocaleDateString()
-            ) {
-              dailyLessonsCount.add(element.lessonPair.start_time);
-              dailyLessons.push(element);
-            }
-          });
-
-          if (dailyLessonsCount.size > 0) {
-            await Teacher.findOneAndUpdate(
-              { chatId: msg.chat.id },
-              {
-                dailyLessons,
-                dailyLessonsCount: Array.from(dailyLessonsCount),
-                isThereToday: true,
+              if (newUser) {
+                await Teacher.create({
+                  chatId: msg.chat.id,
+                  user_full_name:
+                    msg.chat.first_name + " " + msg.chat.last_name,
+                  username: msg.chat.username,
+                  full_name,
+                  employeeId: id,
+                  isThereToday: false,
+                });
+              } else {
+                await Teacher.updateOne(
+                  { chatId: msg.chat.id },
+                  { full_name, employeeId: id, isThereToday: false }
+                );
               }
-            );
-          } else {
-            await Teacher.findOneAndUpdate(
-              { chatId: msg.chat.id },
-              { dailyLessons, dailyLessonsCount: [], isThereToday: false }
-            );
-          }
 
-          let message = "";
-          dailyLessonsCount.forEach((element) => {
-            message += `
-<b style="color:blue;text-align:center">🕰${element}</b>`;
-            dailyLessons.forEach((item, key) => {
-              if (item.lessonPair.start_time == element) {
+              let dailyLessonsCount = new Set();
+              let dailyLessons = [];
+
+              res.data.data.items.forEach(async (element, index) => {
+                if (
+                  new Date(element.lesson_date * 1000).toLocaleDateString() ==
+                  new Date(today).toLocaleDateString()
+                ) {
+                  dailyLessonsCount.add(element.lessonPair.start_time);
+                  dailyLessons.push(element);
+                }
+              });
+
+              if (dailyLessonsCount.size > 0) {
+                await Teacher.findOneAndUpdate(
+                  { chatId: msg.chat.id },
+                  {
+                    dailyLessons,
+                    dailyLessonsCount: Array.from(dailyLessonsCount),
+                    isThereToday: true,
+                  }
+                );
+              } else {
+                await Teacher.findOneAndUpdate(
+                  { chatId: msg.chat.id },
+                  { dailyLessons, dailyLessonsCount: [], isThereToday: false }
+                );
+              }
+
+              let message = "";
+              dailyLessonsCount.forEach((element) => {
                 message += `
+<b style="color:blue;text-align:center">🕰${element}</b>`;
+                dailyLessons.forEach((item, key) => {
+                  if (item.lessonPair.start_time == element) {
+                    message += `
 📎<b>Fan</b>: ${item.subject.name}
        <b>Fakultet</b>: ${item.faculty.name}
        <b>Guruh</b>: ${item.group.name}
@@ -292,33 +294,33 @@ async function TeacherData(id, opts, msg, full_name) {
          item.lesson_date * 1000
        ).toLocaleDateString()}
        <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${
-                  item.lessonPair.end_time
-                }`;
-              }
-            });
-          });
-          bot.editMessageText("Bot muvaffaqiyatli ishga tushdi", opts);
-          bot.sendMessage(
-            msg.chat.id,
-            `Bugun <b>${dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
-            { parse_mode: "HTML",
-              reply_markup: {
-                keyboard: [
-                  ["Qayta ishga tushirish", "Ma'lumotni ko'rish"],
-                  ["Bildirishnomani o'chirish"],
-                ],
-                resize_keyboard: true,
-                // one_time_keyboard: true,
-                // force_reply: true,
-              },
+                      item.lessonPair.end_time
+                    }`;
+                  }
+                });
+              });
+              bot.editMessageText("Bot muvaffaqiyatli ishga tushdi", opts);
+              bot.sendMessage(
+                msg.chat.id,
+                `Bugun <b>${dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
+                {
+                  parse_mode: "HTML",
+                  reply_markup: {
+                    keyboard: [
+                      ["Qayta ishga tushirish", "Ma'lumotni ko'rish"],
+                      ["Bildirishnomani o'chirish"],
+                    ],
+                    resize_keyboard: true,
+                    // one_time_keyboard: true,
+                    // force_reply: true,
+                  },
+                }
+              );
+            } else {
+              bot.editMessageText("Darslar topilmadi!", opts);
             }
-          );
-        } else {
-          bot.editMessageText("Darslar topilmadi!", opts);
-        }
+          });
       });
-      })
-    
   } catch (error) {
     throw error;
   }
@@ -382,7 +384,7 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
     `${String(121).slice(-2)}:${String(100).slice(-2)}`
   ) {
     // Evening message
-    teachers.forEach(async(teacher) => {
+    teachers.forEach(async (teacher) => {
       let message = "";
       await teacher.dailyLessonsCount.forEach((element) => {
         message += `
@@ -408,10 +410,10 @@ Hemis tizimida davomat qilishni unutmang ${message}`,
         { parse_mode: "HTML" }
       );
     });
-  }else if (
+  } else if (
     `${String(100 + hour).slice(-2)}:${String(100 + minut).slice(-2)}` ==
     `${String(102).slice(-2)}:${String(100).slice(-2)}`
-    ) {
+  ) {
     // Update DataBase
     let allTeachers = await Teacher.find({});
     allTeachers.forEach((teacher) => {
@@ -427,42 +429,58 @@ Hemis tizimida davomat qilishni unutmang ${message}`,
               _employee: teacher.employeeId,
             },
           })
-          .then(async (res) => {
-            if (res.data.data.pagination.totalCount != 0) {
-              let dailyLessonsCount = new Set();
-              let dailyLessons = [];
+          .then(async (res0) => {
+            axios
+              .get(url2, {
+                headers: {
+                  accept: "application/json",
+                  authorization: "Bearer " + hemisToken,
+                },
+                params: {
+                  limit: 200,
+                  _employee: teacher.employeeId,
+                  page:res0.data.data.pagination.pageCount
+                },
+              })
+              .then(async (res) => {
+                if (res.data.data.pagination.totalCount != 0) {
+                  let dailyLessonsCount = new Set();
+                  let dailyLessons = [];
 
-              res.data.data.items.forEach(async (element, index) => {
-                if (
-                  new Date(element.lesson_date * 1000).toLocaleDateString() ==
-                  new Date(today).toLocaleDateString()
-                ) {
-                  dailyLessonsCount.add(element.lessonPair.start_time);
-                  dailyLessons.push(element);
+                  res.data.data.items.forEach(async (element, index) => {
+                    if (
+                      new Date(
+                        element.lesson_date * 1000
+                      ).toLocaleDateString() ==
+                      new Date(today).toLocaleDateString()
+                    ) {
+                      dailyLessonsCount.add(element.lessonPair.start_time);
+                      dailyLessons.push(element);
+                    }
+                  });
+                  if (dailyLessonsCount.size > 0) {
+                    await Teacher.findOneAndUpdate(
+                      { chatId: teacher.chatId },
+                      {
+                        dailyLessons,
+                        dailyLessonsCount: Array.from(dailyLessonsCount),
+                        isThereToday: true,
+                        updateAt: Date.now(),
+                      }
+                    );
+                  } else {
+                    await Teacher.findOneAndUpdate(
+                      { chatId: teacher.chatId },
+                      {
+                        dailyLessons,
+                        dailyLessonsCount: [],
+                        isThereToday: false,
+                        updateAt: Date.now(),
+                      }
+                    );
+                  }
                 }
               });
-              if (dailyLessonsCount.size > 0) {
-                await Teacher.findOneAndUpdate(
-                  { chatId: teacher.chatId },
-                  {
-                    dailyLessons,
-                    dailyLessonsCount:Array.from(dailyLessonsCount),
-                    isThereToday: true,
-                    updateAt: Date.now(),
-                  }
-                );
-              } else {
-                await Teacher.findOneAndUpdate(
-                  { chatId: teacher.chatId },
-                  {
-                    dailyLessons,
-                    dailyLessonsCount:[],
-                    isThereToday: false,
-                    updateAt: Date.now(),
-                  }
-                );
-              }
-            }
           });
       } catch (error) {
         throw error;
