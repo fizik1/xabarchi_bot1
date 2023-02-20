@@ -12,6 +12,8 @@ const PORT = process.env.PORT
 //Initialize public folder
 app.use(express.static('public'))
 
+app.use(express.json())
+
 //Initialize Handlebars
 app.engine(
     "hbs",

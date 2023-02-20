@@ -1,8 +1,10 @@
 const { Router } = require("express");
 const router = Router();
 const Teacher = require("../models/teacherModel");
+const Admin = require("../models/adminModel");
 const Department = require("../models/departmentModel");
 const axios = require("axios");
+let bcrypt = require('bcryptjs');
 
 router.get("/", async (req, res) => {
   try {
@@ -72,5 +74,20 @@ router.get("/", async (req, res) => {
       });
   }
 });
+
+
+router.post("/login", async(req, res)=>{
+  try {
+    console.log(req.body);
+    const { password } =req.body
+  let salt = bcrypt.genSaltSync(10);
+  let hash = bcrypt.hashSync(password, salt);
+  res.send(password)
+
+    // const admin = await Admin.find({login})
+  } catch (error) {
+    res.status(400).json({message:error.message})
+  }
+})
 
 module.exports = router;
