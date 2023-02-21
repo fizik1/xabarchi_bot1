@@ -44,6 +44,14 @@ const teacherSchema = new Schema({
     image:{
         type:String
     },
+    isLogin:{
+      type:Boolean,
+      default:false
+    },
+    selected:{
+      type:Object
+    }
+    
     
 }, {timestamps:true})
 

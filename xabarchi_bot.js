@@ -2,6 +2,7 @@ const axios = require("axios");
 const TelegramBot = require("node-telegram-bot-api");
 const connectDB = require("./config/db");
 const Teacher = require("./models/teacherModel");
+var hash = require('hash.js')
 require("dotenv").config();
 
 //Connecting database
@@ -114,11 +115,16 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
             ["Bildirishnomani o'chirish"],
           ],
           resize_keyboard: true,
-          // one_time_keyboard: true,
-          // force_reply: true,
         },
       });
     } else bot.sendMessage(chatId, "Ma'lumot topilmadi");
+  }else if(msg.text.length===24&&msg.text[14]==="/"){
+    const teacher= await Teacher.findOneAndUpdate({chatId:msg.chat.id})
+    if(teacher.selected.hash==hash.sha256().update(msg.text).digest('hex')){
+      
+      await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {department: teacher.selected.department, image: teacher.selected.image})
+      TeacherData(teacher.selected.id, msg, teacher.selected.full_name);
+    }else bot.sendMessage(chatId, "Notug'ri ma'lumot kiritildi. Qaytadan kiritib kuring")
   } else {
     await TeacherName(msg);
   }
@@ -130,17 +136,17 @@ bot.on("callback_query", async function onCallbackQuery(callbackQuery) {
   const opts = {
     chat_id: msg.chat.id,
     message_id: msg.message_id,
+    parse_mode:"HTML"
   };
   let { resultByName } = await Teacher.findOne({ chatId: msg.chat.id }).select(
     "resultByName"
   );
   resultByName.forEach(async (item, index) => {
     if (action == index) {
-      await Teacher.findOneAndUpdate(
-        { chatId: msg.chat.id },
-        { department: item.department, image: item.image }
-      );
-      TeacherData(item.id, opts, msg, item.full_name);
+      await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {selected:item})
+      bot.editMessageText( `<b>JSHSHIR hamda pasport seriyasi va raqamini quyidagi tartibda kiriting</b>:
+JSHSHIR/pasport_seriyasi_va_raqami
+12345678912345/AB1231212`, opts)
     }
   });
   await Teacher.findOneAndUpdate({ chatId: msg.chat.id }, { resultByName: [] });
@@ -188,7 +194,7 @@ async function TeacherName(msg) {
             }),
           };
           // force_reply: true,
-          bot.sendMessage(msg.chat.id, "O'z ism familyangizni anlang", options);
+          bot.sendMessage(msg.chat.id, "O'z ism familyangizni tanlang", options);
         } else
           bot.sendMessage(
             msg.chat.id,
@@ -200,7 +206,8 @@ async function TeacherName(msg) {
   }
 }
 
-async function TeacherData(id, opts, msg, full_name) {
+
+async function TeacherData(id, msg, full_name) {
   try {
     await axios
       .get(url2, {
@@ -228,6 +235,7 @@ async function TeacherData(id, opts, msg, full_name) {
           })
           .then(async (res) => {
             if (res.data.data.pagination.totalCount != 0) {
+              
               let newUser = !Boolean(
                 await Teacher.findOne({ chatId: msg.chat.id })
               );
@@ -299,7 +307,7 @@ async function TeacherData(id, opts, msg, full_name) {
                   }
                 });
               });
-              bot.editMessageText("Bot muvaffaqiyatli ishga tushdi", opts);
+              bot.sendMessage(msg.chat.id,"Bot muvaffaqiyatli ishga tushdi");
               bot.sendMessage(
                 msg.chat.id,
                 `Bugun <b>${dailyLessonsCount.size}</b> para darsingiz bor ${message}`,
@@ -317,7 +325,7 @@ async function TeacherData(id, opts, msg, full_name) {
                 }
               );
             } else {
-              bot.editMessageText("Darslar topilmadi!", opts);
+              bot.sendMessage(msg.chat.id,"Darslar topilmadi!");
             }
           });
       });
