@@ -12,18 +12,18 @@ router.get("/", async (req, res) => {
       if (req.query.faculty) {
         const departments = await Department.find().lean();
         const teachers = await Teacher.find({
-          "department.parent": Number(req.query.faculty),
+          "selected.department.parent": Number(req.query.faculty),
         }).lean();
         res.render("home", {
           faculties: departments.filter((el) => el.structureType.code == 11),
           kafedra: departments.filter((el) => el.structureType.code == 12),
-          teachers: teachers.filter((el) => el.full_name != undefined),
+          teachers: teachers.filter((el) => el.isLo),
           query: departments.filter((el) => el.id == req.query.faculty)[0].name,
         });
       } else if (req.query.kafedra) {
         const departments = await Department.find().lean();
         const teachers = await Teacher.find({
-          "department.id": Number(req.query.kafedra),
+          "selected.department.id": Number(req.query.kafedra),
         }).lean();
         res.render("home", {
           faculties: departments.filter((el) => el.structureType.code == 11),
