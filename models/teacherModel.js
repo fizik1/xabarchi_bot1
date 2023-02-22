@@ -2,10 +2,6 @@ const { Schema, model } = require("mongoose");
 
 
 const teacherSchema = new Schema({
-    full_name:{
-        type:String,
-        // required:true
-    },
     user_full_name:{
         type:String,
     },
@@ -38,15 +34,12 @@ const teacherSchema = new Schema({
         required:true,
         default:true
     },
-    department:{
-        type:Map
-    },
-    image:{
-        type:String
-    },
-    isLogin:{
+    isLogged:{
       type:Boolean,
       default:false
+    },
+    sciences:{
+      type:[]
     },
     selected:{
       type:Object

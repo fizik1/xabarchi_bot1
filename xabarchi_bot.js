@@ -38,6 +38,7 @@ bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   if (msg.text == "/start" || msg.text == "Qayta ishga tushirish") {
     let teacher = await Teacher.findOne({ chatId: msg.chat.id });
+    console.log(teacher);
     if (teacher) {
       let keyboard3 = teacher.isActive
         ? "Bildirishnomani o'chirish"
@@ -76,7 +77,7 @@ bot.on("message", async (msg) => {
       });
       bot.sendMessage(
         teacher.chatId,
-        `O'qituvchi ismi: <b>${teacher?.full_name}</b> 
+        `O'qituvchi ismi: <b>${teacher?.selected.full_name}</b> 
 Bugun <b>${new Date().toLocaleDateString()}</b>
 Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
         { parse_mode: "HTML" }
@@ -122,9 +123,9 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
     const teacher= await Teacher.findOneAndUpdate({chatId:msg.chat.id})
     if(teacher.selected.hash==hash.sha256().update(msg.text).digest('hex')){
       
-      await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {department: teacher.selected.department, image: teacher.selected.image})
-      TeacherData(teacher.selected.id, msg, teacher.selected.full_name);
-    }else bot.sendMessage(chatId, "Notug'ri ma'lumot kiritildi. Qaytadan kiritib kuring")
+      await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {isLogged:true})
+      TeacherData(teacher.selected.id, msg);
+    }else bot.sendMessage(chatId, "Noto'g'ri ma'lumot kiritildi. Qaytadan kiritib kuring")
   } else {
     await TeacherName(msg);
   }
@@ -207,7 +208,7 @@ async function TeacherName(msg) {
 }
 
 
-async function TeacherData(id, msg, full_name) {
+async function TeacherData(id, msg) {
   try {
     await axios
       .get(url2, {
@@ -235,7 +236,6 @@ async function TeacherData(id, msg, full_name) {
           })
           .then(async (res) => {
             if (res.data.data.pagination.totalCount != 0) {
-              
               let newUser = !Boolean(
                 await Teacher.findOne({ chatId: msg.chat.id })
               );
@@ -244,21 +244,21 @@ async function TeacherData(id, msg, full_name) {
                 await Teacher.create({
                   chatId: msg.chat.id,
                   user_full_name:
-                    msg.chat.first_name + " " + msg.chat.last_name,
+                  msg.chat.first_name + " " + msg.chat.last_name,
                   username: msg.chat.username,
-                  full_name,
                   employeeId: id,
                   isThereToday: false,
                 });
               } else {
                 await Teacher.updateOne(
                   { chatId: msg.chat.id },
-                  { full_name, employeeId: id, isThereToday: false }
+                  { employeeId: id, isThereToday: false }
                 );
               }
 
               let dailyLessonsCount = new Set();
               let dailyLessons = [];
+              let sciences = new Set()
 
               res.data.data.items.forEach(async (element, index) => {
                 if (
@@ -268,6 +268,9 @@ async function TeacherData(id, msg, full_name) {
                   dailyLessonsCount.add(element.lessonPair.start_time);
                   dailyLessons.push(element);
                 }
+
+                sciences.add(element.subject.name)
+                // console.log(element.subject.name);
               });
 
               if (dailyLessonsCount.size > 0) {
@@ -277,12 +280,13 @@ async function TeacherData(id, msg, full_name) {
                     dailyLessons,
                     dailyLessonsCount: Array.from(dailyLessonsCount),
                     isThereToday: true,
+                    sciences
                   }
                 );
               } else {
                 await Teacher.findOneAndUpdate(
                   { chatId: msg.chat.id },
-                  { dailyLessons, dailyLessonsCount: [], isThereToday: false }
+                  { dailyLessons, dailyLessonsCount: [], isThereToday: false, sciences:Array.from(sciences) }
                 );
               }
 
@@ -402,11 +406,11 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
           if (item.lessonPair.start_time == element) {
             message += `
 📎<b>Fan</b>: ${item.subject.name}
-      <b>Fakultet</b>: ${item.faculty.name}
-      <b>Guruh</b>: ${item.group.name}
-      <b>Xona</b>: ${item.auditorium.name}
-      <b>Dars turi</b>: ${item.trainingType.name}
-      <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${item.lessonPair.end_time}`;
+       <b>Fakultet</b>: ${item.faculty.name}
+       <b>Guruh</b>: ${item.group.name}
+       <b>Xona</b>: ${item.auditorium.name}
+       <b>Dars turi</b>: ${item.trainingType.name}
+       <b>Dars vaqti</b>: ${item.lessonPair.start_time}-${item.lessonPair.end_time}`;
           }
         });
       });
