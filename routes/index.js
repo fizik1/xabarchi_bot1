@@ -12,23 +12,24 @@ router.get("/", async (req, res) => {
       if (req.query.faculty) {
         const departments = await Department.find().lean();
         const teachers = await Teacher.find({
-          "selected.department.parent": Number(req.query.faculty),
+          "department.parent": Number(req.query.faculty),
         }).lean();
+        console.log(teachers);
         res.render("home", {
           faculties: departments.filter((el) => el.structureType.code == 11),
           kafedra: departments.filter((el) => el.structureType.code == 12),
-          teachers: teachers.filter((el) => el.isLo),
+          teachers: teachers.filter((el) => el.isLogged),
           query: departments.filter((el) => el.id == req.query.faculty)[0].name,
         });
       } else if (req.query.kafedra) {
         const departments = await Department.find().lean();
         const teachers = await Teacher.find({
-          "selected.department.id": Number(req.query.kafedra),
+          "department.id": Number(req.query.kafedra),
         }).lean();
         res.render("home", {
           faculties: departments.filter((el) => el.structureType.code == 11),
           kafedra: departments.filter((el) => el.structureType.code == 12),
-          teachers: teachers.filter((el) => el.full_name != undefined),
+          teachers: teachers.filter((el) => el.isLogged),
           query: departments.filter((el) => el.id == req.query.kafedra)[0].name,
         });
       } else if (req.query.name) {
@@ -42,7 +43,7 @@ router.get("/", async (req, res) => {
         res.render("home", {
           faculties: departments.filter((el) => el.structureType.code == 11),
           kafedra: departments.filter((el) => el.structureType.code == 12),
-          teachers: teachers.filter((el) => el.full_name != undefined),
+          teachers: teachers.filter((el) => el.isLogged),
           query: req.query.name,
         });
       } else {
@@ -51,7 +52,7 @@ router.get("/", async (req, res) => {
         res.render("home", {
           faculties: departments.filter((el) => el.structureType.code == 11),
           kafedra: departments.filter((el) => el.structureType.code == 12),
-          teachers: teachers.filter((el) => el.full_name != undefined),
+          teachers: teachers.filter((el) => el.isLogged),
           query: "Hammasi",
         });
       }
@@ -94,5 +95,10 @@ router.post("/login", async (req, res) => {
     });
   }
 });
+
+router.get("/logout", async(req, res)=>{
+  req.session.destroy()
+  res.render("login")
+})
 
 module.exports = router;

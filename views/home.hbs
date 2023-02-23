@@ -37,8 +37,15 @@
       Izlash
     </button>
   </form>
+  <a
+  href="/logout"
+    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow ml-16 cursor-pointer"
+
+  >
+    Chiqish
+  </a>
 </div>
-<div class="max-w-7xl mx-auto text-sm pt-20">
+<div class="max-w-[1400px] mx-auto text-sm pt-20">
   <div class="text-xl font-medium my-5">
     <h1>So'rov: {{query}}</h1>
     <h1>Natijalar soni:{{teachers.length}}</h1>
@@ -52,9 +59,10 @@
           >
             rasm
           </div>
-          <div class="w-1/3 ">Ism</div>
-          <div class="w-1/3">Kafedra</div>
-          <div class="w-1/3">Telegram name</div>
+          <div class="w-1/4">Ism</div>
+          <div class="w-1/4">Kafedra</div>
+          <div class="w-1/4">Biriktirilgan fanlar</div>
+          <div class="w-1/4">Telegram name</div>
         </div>
         <div>
           Bildirishnoma
@@ -64,19 +72,26 @@
     {{#each teachers}}
       <li class="bg-white px-5 py-2 rounded-lg">
         <div class="flex items-center justify-between">
-          <div class="flex items-center w-full">
+          <div class="flex items-start w-full">
             <div
               class="w-16 border rounded-lg overflow-hidden flex items-center justify-center mr-3"
             >
               {{#if this.image}}
-                <img src={{this.selected.image}} alt="avatar" />
+                <img src={{this.image}} alt="avatar" />
               {{else}}
                 <img src="./images/avatar.png" alt="" />
               {{/if}}
             </div>
-            <div class="w-1/3 text-lg">{{this.full_name}}</div>
-            <div class="w-1/3">{{this.selected.department.name}}</div>
-            <div class="w-1/3">{{this.user_full_name}}</div>
+            <div class="w-1/4 text-lg">{{this.full_name}}</div>
+            <div class="w-1/4">{{this.department.name}}</div>
+            <div class="w-1/4 flex flex-col">
+              {{#if this.sciences}}
+                {{#each this.sciences}}
+                  <div>{{@key}} {{this}}</div>
+                {{/each}}
+              {{/if}}
+            </div>
+            <div class="w-1/4">{{this.user_full_name}}</div>
           </div>
           <div class="w-28 flex justify-center">
             {{#if this.isActive}}
