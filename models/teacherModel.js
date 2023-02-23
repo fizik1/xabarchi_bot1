@@ -8,6 +8,9 @@ const teacherSchema = new Schema({
     username:{
         type:String
     },
+    full_name:{
+      type:String
+    },
     chatId:{
         type:String,
         required:true
@@ -43,7 +46,11 @@ const teacherSchema = new Schema({
     },
     selected:{
       type:Object
-    }
+    },
+    department:{
+      type:Object
+    },
+    image:String
     
     
 }, {timestamps:true})
