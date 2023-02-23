@@ -123,7 +123,7 @@ Bugun <b>${teacher.dailyLessonsCount.length}</b> para darsingiz bor ${message}`,
     const teacher= await Teacher.findOneAndUpdate({chatId:msg.chat.id})
     if(teacher.selected.hash==hash.sha256().update(msg.text).digest('hex')){
       
-      await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {isLogged:true})
+      await Teacher.findOneAndUpdate({chatId:msg.chat.id}, {isLogged:true, image })
       TeacherData(teacher.selected.id, msg);
     }else bot.sendMessage(chatId, "Noto'g'ri ma'lumot kiritildi. Qaytadan kiritib kuring")
   } else {
